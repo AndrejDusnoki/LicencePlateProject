@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.andul.licenceplatecapture.MainActivity">
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/surfaceView"
+        />
+    <android.support.v4.widget.ContentLoadingProgressBar
+        android:id="@+id/ProgressBar"
+        android:visibility="invisible"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="100dp"
+        android:layout_marginLeft="100dp"
+        android:layout_alignParentTop="true"/>
+
+
+    <FrameLayout
+        android:layout_alignParentRight="true"
+        android:id="@+id/RightShadow"
+        android:layout_width="30dp"
+        android:background="@android:color/black"
+
+        android:layout_height="match_parent"></FrameLayout>
+    <FrameLayout
+        android:layout_alignParentLeft="true"
+        android:id="@+id/LeftShadow"
+        android:layout_width="30dp"
+        android:background="@android:color/black"
+        android:layout_height="match_parent"></FrameLayout>
+    <FrameLayout
+        android:layout_toLeftOf="@id/RightShadow"
+        android:layout_toRightOf="@id/LeftShadow"
+        android:layout_alignTop="@id/surfaceView"
+        android:background="@android:color/black"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:id="@+id/TopShadow"
+        />
+    <FrameLayout
+        android:layout_toLeftOf="@id/RightShadow"
+        android:layout_toRightOf="@id/LeftShadow"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/black"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:id="@+id/BottomShadow"
+        />
+    <ImageButton
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:elevation="10dp"
+        android:id="@+id/btnSettings"
+        android:src="@drawable/settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <ImageButton
+        android:src="@drawable/record_btn_1"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/btnTakeImage"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:elevation="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+
+
+</RelativeLayout>

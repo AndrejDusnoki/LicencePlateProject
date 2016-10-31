@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white">
+
+
+
+    <TextView
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:textAlignment="center"
+        android:id="@+id/tvChooseFolder"
+        android:text="Choose destination folder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+    <TextView
+        android:textAlignment="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="5dp"
+        android:text="Max shots per session"
+        android:layout_below="@id/tvChooseFolder"
+        android:id="@+id/tvPickerTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"/>
+    <NumberPicker
+        android:layout_below="@id/tvPickerTitle"
+        android:id="@+id/numPicker"
+        android:layout_centerHorizontal="true"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:scaleY="0.8"
+        ></NumberPicker>
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@drawable/file_icon"
+            android:paddingTop="10dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+    </FrameLayout>
+    <FrameLayout
+        android:layout_below="@id/tvChooseFolder"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/black"></FrameLayout>
+    <Button
+        android:id="@+id/btnApply"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="40dp"
+        android:paddingRight="10dp"
+        android:paddingLeft="10dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:layout_toRightOf="@id/numPicker"
+        android:layout_alignBottom="@+id/numPicker"
+
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="APPLY"/>
+
+</RelativeLayout>
