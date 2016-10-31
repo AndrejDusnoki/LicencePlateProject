@@ -51,7 +51,6 @@ public class MainActivity extends Activity implements CompletionHandler,ImagesTa
         mImgHandler =this;
         checkCameraHardware(this);//checks if device supports all parameters needed for application to work
         mCamera=getCameraInstance(); //gets instance of camera
-        mCamera.getParameters().setPreviewSize(1920,1080);//Sets preview size to 1080p
         mFrameCameraView = (FrameLayout) findViewById(R.id.surfaceView);
         mCameraPreview = new  CameraPreview(this,mCamera, mFrameCameraView, mImgHandler);
         mFrameCameraView.addView(mCameraPreview);
@@ -150,7 +149,6 @@ public class MainActivity extends Activity implements CompletionHandler,ImagesTa
         if (params.getSupportedFlashModes().contains(FOCUS_MODE_CONTINUOUS_PICTURE)){ // check that continuous focus mode is supported
             params.setFocusMode(FOCUS_MODE_AUTO);
             params.setFocusMode(FOCUS_MODE_CONTINUOUS_PICTURE);
-
         }
         else {
             params.setFocusMode(FOCUS_MODE_AUTO);

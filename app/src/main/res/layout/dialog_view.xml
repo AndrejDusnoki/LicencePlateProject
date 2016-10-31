@@ -5,20 +5,30 @@
     android:background="@android:color/white">
 
 
-
+    <FrameLayout
+        android:id="@+id/imgChooseFolder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@drawable/file_icon"
+            android:paddingTop="10dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
+    </FrameLayout>
     <TextView
+
+        android:layout_marginLeft="10dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:textAlignment="center"
+        android:layout_toRightOf="@id/imgChooseFolder"
         android:id="@+id/tvChooseFolder"
         android:text="Choose destination folder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="12sp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentTop="true"/>
     <TextView
+        android:layout_centerHorizontal="true"
         android:textAlignment="center"
         android:paddingTop="10dp"
         android:paddingBottom="5dp"
@@ -36,15 +46,7 @@
         android:layout_height="wrap_content"
         android:scaleY="0.8"
         ></NumberPicker>
-    <FrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:src="@drawable/file_icon"
-            android:paddingTop="10dp"
-            android:layout_width="30dp"
-            android:layout_height="30dp" />
-    </FrameLayout>
+
     <FrameLayout
         android:layout_below="@id/tvChooseFolder"
         android:layout_width="match_parent"
