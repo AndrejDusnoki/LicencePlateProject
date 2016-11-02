@@ -39,6 +39,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private FrameLayout mCameraView;
     public boolean ButtonClicked;
     public boolean ShotLimiterChanged=false;
+    public boolean centerFocus;//Used to start capture on focus callback
+    private int toastCounter;//Used so toast for image capture shows just once per session
     public CameraPreview(final Context context, Camera camera, FrameLayout CameraView, final ImagesTakenHandler handler) {
         super(context);
         this.mContext = context;
@@ -54,7 +56,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 final byte[] data = imageData;//contains image data from preview
                 int shotLimiter=ShotValueSingleton.getInstance().getShotLimiter();//get value of ShotLimiter from singleton
                 Log.d(TAG,"CALLED BACK"+ String.valueOf(mCamera.getParameters().getPreviewFormat()));
-                if (ButtonClicked && mImagePaths.size()<shotLimiter) {
+                if (ButtonClicked && mImagePaths.size()<shotLimiter && centerFocus) {
+                    if(toastCounter==0){
+                        Toast toast=Toast.makeText(context,"Image capture started",Toast.LENGTH_SHORT);
+                        toast.show();
+                        toastCounter++;
+                    }
                     //Method called when record button is clicked, and runs till it reaches shotLimiter value
                     ImageObject image = new ImageObject();//Create new object that can hold image data and time of capture
                     try{
@@ -150,6 +157,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
            super.onPostExecute(s);
             mCamera.setPreviewCallback(mCallback);//Upon completion of image conversion attach callback to camera
             Log.d("ADDED IMAGES", "ADDED IMAGES");
+            toastCounter=0;
             Toast toast = Toast.makeText(mContext, "Images converted : " + String.valueOf(mImagePaths.size()), Toast.LENGTH_SHORT);
             toast.show();
             mImagePaths.clear();//Clear filepaths for new files to be added

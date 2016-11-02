@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -50,10 +51,7 @@ public class MainActivity extends Activity implements CompletionHandler,ImagesTa
         mCompletionHandler =this;
         mImgHandler =this;
         checkCameraHardware(this);//checks if device supports all parameters needed for application to work
-        mCamera=getCameraInstance(); //gets instance of camera
         mFrameCameraView = (FrameLayout) findViewById(R.id.surfaceView);
-        mCameraPreview = new  CameraPreview(this,mCamera, mFrameCameraView, mImgHandler);
-        mFrameCameraView.addView(mCameraPreview);
         mFrameTopShadow = (FrameLayout) findViewById(R.id.TopShadow);
         mFrameBottomShadow = (FrameLayout) findViewById(R.id.BottomShadow);
         //Get display size and put width and height into variables
@@ -91,6 +89,7 @@ public class MainActivity extends Activity implements CompletionHandler,ImagesTa
                             Log.d(TAG,"TIME FINISHED: "+date+" TIME STARTED :"+ mTimeStarted);//Log length of time that img capture session took
                         }
                         else {
+                            setFocus(false,null);
                             //if button not clikced set icon of recor button to red icon
                             Drawable drawable=context.getResources().getDrawable(R.drawable.record_btn_2);
                             mBtnSnapshot.setImageDrawable(drawable);
@@ -144,74 +143,88 @@ public class MainActivity extends Activity implements CompletionHandler,ImagesTa
         }
         return c; // returns null if camera is unavailable
     }
-    private void setFocus(){
-        Camera.Parameters params = mCamera.getParameters();
-        if (params.getSupportedFlashModes().contains(FOCUS_MODE_CONTINUOUS_PICTURE)){ // check that continuous focus mode is supported
-            params.setFocusMode(FOCUS_MODE_AUTO);
-            params.setFocusMode(FOCUS_MODE_CONTINUOUS_PICTURE);
+    private void setFocus(final boolean IsScreenTapped,@Nullable MotionEvent event){
+        float x;
+        float y;
+        if(!IsScreenTapped){//If input not from touch listener, set focus area to center of screen
+            x=mFrameCameraView.getX()+mFrameCameraView.getWidth()/2;
+            y=mFrameCameraView.getY()+mFrameCameraView.getHeight()/2;
+        }else {
+            x=event.getX();
+            y=event.getY();
         }
-        else {
-            params.setFocusMode(FOCUS_MODE_AUTO);
+
+        if (mCamera != null) {
+            //Set focus on touch
+            mCamera.cancelAutoFocus();
+            //Get user touch paramteres and convert them to rect for focus
+            Rect focusRect = calculateTapArea(x, y);
+
+            Camera.Parameters parameters = mCamera.getParameters();
+            //If camera not set to focus mode auto, set it
+            if (parameters.getFocusMode() != Camera.Parameters.FOCUS_MODE_AUTO) {
+                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+            }
+            //If camera supports focusAreas, set focus area to calculated focus area from focusRect
+            if (parameters.getMaxNumFocusAreas() > 0) {
+                List<Camera.Area> mylist = new ArrayList<Camera.Area>();
+                mylist.add(new Camera.Area(focusRect, 1000));
+                parameters.setFocusAreas(mylist);
+            }
+            try {
+                mCamera.cancelAutoFocus();
+                mCamera.setParameters(parameters);//add paramaters to camera
+                mCamera.startPreview();
+                mCamera.autoFocus(new Camera.AutoFocusCallback() {
+                    @Override
+                    public void onAutoFocus(boolean success, Camera camera) {
+                        if(!IsScreenTapped){
+                            mCameraPreview.centerFocus=true;
+                        }
+                        //if camera not set to continuos focus mode, set it
+                        if (camera.getParameters().getSupportedFocusModes().contains(FOCUS_MODE_CONTINUOUS_PICTURE
+                        )&&camera.getParameters().getFocusMode() != Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE){
+                            Camera.Parameters parameters = camera.getParameters();
+                            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+                            //remove focus areas
+                            if (parameters.getMaxNumFocusAreas() > 0) {
+                                parameters.setFocusAreas(null);
+                            }
+                            camera.setParameters(parameters);
+                            camera.startPreview();
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
-        mCamera.setParameters(params);
+
     }
     @Override
     protected void onResume() {
         super.onResume();
         ShotValueSingleton.getInstance().setShotLimiter(getShotLimiter());//Add shared preference value for ShotLimiter to singleton
         //empty camera view, release camera , get new camera instance and reconnect it with preview
-        mFrameCameraView.removeAllViews();
-        mCamera.release();
-        mCamera=getCameraInstance();
-        if (mCamera!=null){
+        if(mCamera==null){
+            mCamera=getCameraInstance(); //gets instance of camera
             mCameraPreview = new  CameraPreview(this,mCamera, mFrameCameraView, mImgHandler);
             mFrameCameraView.addView(mCameraPreview);
         }
+        else {
+            //if there is camera instance re intitlaze all views and re
+            mFrameCameraView.removeAllViews();
+            mCamera.release();
+            mCamera=getCameraInstance();
+            mCameraPreview = new  CameraPreview(this,mCamera, mFrameCameraView, mImgHandler);
+            mFrameCameraView.addView(mCameraPreview);
+        }
+
+
         mFrameCameraView.setOnTouchListener(new FrameLayout.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (mCamera != null) {
-                    //Set focus on touch
-                    mCamera.cancelAutoFocus();
-                    //Get user touch paramteres and convert them to rect for focus
-                    Rect focusRect = calculateTapArea(event.getX(), event.getY());
-
-                    Camera.Parameters parameters = mCamera.getParameters();
-                    //If camera not set to focus mode auto, set it
-                    if (parameters.getFocusMode() != Camera.Parameters.FOCUS_MODE_AUTO) {
-                        parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-                    }
-                    //If camera supports focusAreas, set focus area to calculated focus area from focusRect
-                    if (parameters.getMaxNumFocusAreas() > 0) {
-                        List<Camera.Area> mylist = new ArrayList<Camera.Area>();
-                        mylist.add(new Camera.Area(focusRect, 1000));
-                        parameters.setFocusAreas(mylist);
-                    }
-                    try {
-                        mCamera.cancelAutoFocus();
-                        mCamera.setParameters(parameters);//add paramaters to camera
-                        mCamera.startPreview();
-                        mCamera.autoFocus(new Camera.AutoFocusCallback() {
-                            @Override
-                            public void onAutoFocus(boolean success, Camera camera) {
-                                //if camera not set to continuos focus mode, set it
-                                if (camera.getParameters().getSupportedFocusModes().contains(FOCUS_MODE_CONTINUOUS_PICTURE
-                                    )&&camera.getParameters().getFocusMode() != Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE){
-                                    Camera.Parameters parameters = camera.getParameters();
-                                    parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-                                    //remove focus areas
-                                    if (parameters.getMaxNumFocusAreas() > 0) {
-                                        parameters.setFocusAreas(null);
-                                    }
-                                    camera.setParameters(parameters);
-                                    camera.startPreview();
-                                }
-                            }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+               setFocus(true,event);
                 return false;
             }
         });

@@ -24,6 +24,6 @@ public class SplashScreen extends Activity {
         };
 
         Handler h = new Handler();
-        h.postDelayed(r, 1000);
+        h.postDelayed(r, 500);
     }
 }
