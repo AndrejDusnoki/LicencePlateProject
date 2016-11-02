@@ -148,6 +148,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            centerFocus=false;
             mCamera.setPreviewCallback(null);//Remove callback so images can't be taken till jpeg conversion finishes
             Toast toast = Toast.makeText(mContext, "Converting images to jpeg", Toast.LENGTH_SHORT);
             toast.show();
