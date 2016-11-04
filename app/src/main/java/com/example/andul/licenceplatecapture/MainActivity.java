@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
@@ -206,28 +207,31 @@ public class MainActivity extends Activity implements CompletionHandler,ImagesTa
         super.onResume();
         ShotValueSingleton.getInstance().setShotLimiter(getShotLimiter());//Add shared preference value for ShotLimiter to singleton
         //empty camera view, release camera , get new camera instance and reconnect it with preview
-        if(mCamera==null){
-            mCamera=getCameraInstance(); //gets instance of camera
-            mCameraPreview = new  CameraPreview(this,mCamera, mFrameCameraView, mImgHandler);
-            mFrameCameraView.addView(mCameraPreview);
-        }
-        else {
-            //if there is camera instance re intitlaze all views and re
-            mFrameCameraView.removeAllViews();
-            mCamera.release();
-            mCamera=getCameraInstance();
-            mCameraPreview = new  CameraPreview(this,mCamera, mFrameCameraView, mImgHandler);
-            mFrameCameraView.addView(mCameraPreview);
-        }
 
-
-        mFrameCameraView.setOnTouchListener(new FrameLayout.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-               setFocus(true,event);
-                return false;
+            if(mCamera==null){
+                mCamera=getCameraInstance(); //gets instance of camera
+                mCameraPreview = new  CameraPreview(this,mCamera, mFrameCameraView, mImgHandler);
+                mFrameCameraView.addView(mCameraPreview);
             }
-        });
+            else {
+                //if there is camera instance re intitlaze all views and re
+                mFrameCameraView.removeAllViews();
+                mCamera.release();
+                mCamera=getCameraInstance();
+                mCameraPreview = new  CameraPreview(this,mCamera, mFrameCameraView, mImgHandler);
+                mFrameCameraView.addView(mCameraPreview);
+            }
+
+
+            mFrameCameraView.setOnTouchListener(new FrameLayout.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    setFocus(true,event);
+                    return false;
+                }
+            });
+
+
     }
     private Rect calculateTapArea(float x, float y) {
         //Convert user touch params to rect for focus
@@ -272,4 +276,5 @@ public class MainActivity extends Activity implements CompletionHandler,ImagesTa
         homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         context.startActivity(homeIntent);
     }
+
 }
